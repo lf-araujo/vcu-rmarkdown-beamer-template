@@ -1,0 +1,358 @@
+---
+title: "MR-Meeting updates"
+author: "Luis Castro-de-Araujo ^[Post-doc T32. luis.araujo@vcuhealth.org  \n]"
+date: \today 
+institute: "Virginia Institute for Psychiatric and Behavioral Genetics \n & \n The University of Melbourne"
+csl: style/chicago-fullnote-bibliography.csl
+suppress-bibliography: true
+bibliography: /home/luis/Documents/library.bib
+lang: en-AU
+toc: yes 
+output: beamer_presentation
+classoption: "aspectratio=169"
+theme: metropolis
+header-includes: |
+ \usepackage{navigator}
+ \embeddedfile{project}{2022-presentation.Rmd}
+  \usepackage{appendixnumberbeamer}
+  \usepackage{roboto}
+ \usepackage[font={footnotesize}]{caption}
+ \setbeamerfont{footnote}{size=\tiny}
+ \metroset{sectionpage=progressbar, titleformat=smallcaps}
+ \setbeamercolor{itemize item}{fg=vcuyellow}
+ \setbeamercolor{itemize subitem}{fg=vcuyellow}
+ \setbeamercolor{itemize subsubitem}{fg=vcuyellow}
+  \setbeamertemplate{itemize item}[circle]
+  \setbeamertemplate{itemize subitem}[square]
+  \setbeamertemplate{itemize subsubitem}[triangle]
+  \titlegraphic{%
+  \hfill\includegraphics[width=3cm,height=1.6cm,keepaspectratio]{style/VCU-Logo.png}}
+  \definecolor{vcuyellow}{HTML}{FDBD10}
+ \setbeamercolor{palette primary}{fg=vcuyellow, bg=black}
+  \setbeamercolor{frametitle}{fg=vcuyellow, bg=black}
+  \setbeamercolor{titlelike}{fg=black}
+  \setbeamercolor{titlepage}{fg=black, bg=vcuyellow}
+  \setbeamercolor{footnote}{bg=black}
+  \setbeamercolor{normal text}{fg=black}
+  \setbeamercolor{block title}{fg=black, bg=vcuyellow!40!white}
+  \setbeamercolor{alerted text}{fg=red}
+  \setbeamercolor{example text}{fg=black}
+  \setbeamercolor{title separator}{fg = vcuyellow, bg=vcuyellow}
+ \setbeamercolor{progress bar}{bg=white, fg=vcuyellow}
+ \setbeamercolor{progress bar in head/foot}{bg=white, fg=vcuyellow}
+  \setbeamercolor{progress bar in section page}{bg=white, fg=vcuyellow}
+ \makeatletter
+ \newsavebox{\mybox}
+ \setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \savebox{\mybox}{%
+      \begin{beamercolorbox}[%
+          wd=\paperwidth,%
+          sep=0pt,%
+          leftskip=\metropolis@frametitle@padding,%
+          rightskip=\metropolis@frametitle@padding,%
+        ]{frametitle}%
+      \metropolis@frametitlestrut@start\insertframetitle\metropolis@frametitlestrut@end%
+      \end{beamercolorbox}%
+    }
+  \begin{beamercolorbox}[%
+      wd=\paperwidth,%
+      sep=0pt,%
+      leftskip=\metropolis@frametitle@padding,%
+      rightskip=\metropolis@frametitle@padding,%
+    ]{frametitle}%
+  \metropolis@frametitlestrut@start\insertframetitle\metropolis@frametitlestrut@end%
+  \hfill%
+  \raisebox{-\metropolis@frametitle@padding}{\includegraphics[height=\dimexpr\ht\mybox+\metropolis@frametitle@padding\relax]{style/VCU-Logo.png}}%
+    \hspace*{-\metropolis@frametitle@padding}
+  \end{beamercolorbox}%
+ }
+ \makeatother
+  \makeatletter
+  \pretocmd{\beamer@reseteecodes}{%
+    \ifbool{metropolis@standout}{
+      \endgroup
+      \boolfalse{metropolis@standout}
+    }{}
+  }{}{}
+  \makeatother
+---
+
+
+```{r setup, include=FALSE}
+
+c("ProjectTemplate", "here", "TwoSampleMR", "stringr","patchwork",
+  "dplyr", "qrencoder", "knitr", "MASS", "quantreg", "ggplot2") |>
+  lapply(function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x)}})
+
+set.seed(42) # setting seed for stochastic functions
+setwd(here()) # needed as we are in /src, in linux here() should be used
+
+load.project(cache = F) # Loading the project
+pclean()
+
+# R options
+options(
+  digits = 3, # Only two decimal digits
+  scipen = 999 # Remove scientific notation
+)
+
+
+# Knitr options
+knitr::opts_chunk$set(
+  comment = NA, # remove comment symbol
+  cache.path = "../cache/", # where should I save cache?
+  fig.path = "../graphs/", # where should I save figures?
+  echo = F, # dont echo by default
+  cache = F, # dont cache by default
+  fig.width = 10, # setting the best witdth for figures
+  fig.height = 7, # best height
+  dpi = 300, # high dpi for publication quality,
+  error = FALSE # do not interrupt in case of errors
+)
+
+theme_luis  <- function() {
+  return_theme <-  ggplot2::theme_bw(12) +
+    ggplot2::theme( 
+        panel.border = element_rect(colour = "black"),
+        legend.background = element_rect(linetype = 1, size = 0.2, colour = 1),
+        text = element_text(size = 13),
+        axis.text = element_text(size = 12),
+        element_line(size = 1))
+}
+
+```
+
+\section{MRDoC Power Comparisons}
+
+# Specification
+
+:::::::::::::: {.columns}
+::: {.column width="70%"}
+
+
+```{r out.width = "90%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/MR-Project/graphs/models-combined-mod.png")
+```
+
+:::
+::: {.column width="30%"}
+
+\tiny
+MR-DoC (A), DoC (B), and MR-DoC2 (C) model specifications for a single twin member. They include the effects of additive genetic (A), common environment (C) and specific environment (E) factors for both Trait 1 and Trait 2, and their effects may correlate (parameters ra, rc, and re). Path labels in red are important to the model’s overall power, those susceptible to measurement error in blue, and in orange are those that are both susceptible to measurement error and are important to the model’s overall power.
+:::
+::::::::::::::
+
+
+# Factorial design
+
+\scriptsize
+| theta       | Design 1 (DoC)         | Design 2 (MR-DoC)       | Design 3 (MR-DoC2)      |
+|-------------|------------------------|-------------------------|-------------------------|
+| b1          |                        | sqrt(0.025, 0.05,0.75)  | sqrt(0.025, 0.05,0.75)  |
+| b2          |                        | sqrt(0.025,  0.05,0.75) |                         |
+| b3          |                        |                         | sqrt(0.025,  0.05,0.75) |
+| g1          | sqrt(0.20, 0.40, 0.60) | sqrt(0.20, 0.40, 0.60)  | sqrt(0.20, 0.40, 0.60)  |
+| g2          |                        |                         | sqrt(0.20, 0.40, 0.60)  |
+| ra          | .0,.25,.50             | .0,.25,.50              | .0,.25,.50              |
+| rc          | .0,.25,.50             | .0,.25,.50              | .0,.25,.50              |
+| re          |                        |                         | .0,.25,.50              |
+| rf          |                        |                         | .0,.25,.50              |
+| ax          | .0,.10,.25             | .0,.10,.25              | .0,.10,.25              |
+| ay          | .0,.10,.25             | .0,.10,.25              | .0,.10,.25              |
+| cx          | .0,.10,.25             | .0,.10,.25              | .0,.10,.25              |
+| cy          | .0,.10,.25             | .0,.10,.25              | .0,.10,.25              |
+| Total cells | 3^7=2187                |  3^9= 19683              |  3^12=531441             |
+: Parameter levels on the three factorial designs, with respective total number of cells for each design simulation. The model specification can be seen in Figure 1. 
+
+# Percent bias - unreliability factor
+
+
+```{r out.width = "70%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/temp/relal-bias.png")
+```
+
+# Percent bias - re unmodelled
+
+```{r out.width = "70%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/MR-Project/graphs/re_fixed_bias.png")
+```
+
+#
+
+\section{MRDoC Power Comparisons - Data generating model is MRDOC2}
+
+# Levels
+
+\tiny 
+
+```{r eval=F, echo=T}
+
+try(stopCluster(cl))
+cl <- makeCluster(detectCores()-1, outfile = "")
+registerDoParallel(cl)
+
+local1 <- foreach(g1=c(sqrt(.020),sqrt(.040)), .combine =rbind,
+                  .packages = c("umx", "MASS",  "tidyr")) %:%
+          foreach(axs=c(0,.10), .combine =rbind) %:%
+          foreach(ays=c(0,.10), .combine = rbind) %:%
+          foreach(g2=c(sqrt(.020),sqrt(.040)), .combine =rbind) %:%
+          foreach(b3=c(sqrt(.025),sqrt(.05)), .combine =rbind) %:%
+          foreach(re=c(0,.10), .combine =rbind) %:%
+          foreach(ra=c(0, .25), .combine =rbind) %:%
+          foreach(reliability=c(FALSE, TRUE), .combine =rbind) %:% 
+          foreach(rc=c(0, .25), .combine =rbind) %dopar% {
+
+  sim(est_out = T, g1=g1,g2=g2, b3=b3, axs=axs, ays=ays, rc=rc, ra =ra, 
+      reliability = reliability )
+}
+
+stopCluster(cl)
+
+```
+
+# Unreliability factor 
+
+```{r out.width = "80%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/MR-Project/graphs/reliable_unreliable.png")
+```
+
+# Re in data, but not in the fit
+
+```{r out.width = "80%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/MR-Project/graphs/re_in_data.png")
+```
+
+
+# Variance explained in statistical power - v1
+
+```{r out.width = "100%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/MR-Project/graphs/data_gen_stacked.png")
+```
+
+# Variance explained in statistical power - v2
+
+```{r out.width = "100%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/MR-Project/graphs/data_gen_stacked_v2.png")
+```
+
+
+# Variance explained in statistical power by model parameters - old
+
+```{r out.width = "100%", fig.align = "center", fig.cap="Linear regression of NCP on the parameter values used for 19683 and 4097 exact data simulation power analyses in the ACE model  for DoC, MR-DoC and MR-DoC2, respectively. The hypotheses are g1=0 for all. These are stacked bar plots with semipartial correlation squared for each of the parameters. The total R2 for both DoC and MR-DoC models (including all parameters in the regression) was 0.945, and 0.93 for MR-DoC2. One can interpret these as g1 having the largest effect on DoC and MR-DoC overall power, and g1, b1 and rf having the largest effects on the MR-DoC2 overall power." }
+knitr::include_graphics("/home/luis/Desktop/MR-Project/graphs/stacked.png")
+```
+
+#
+\section{Longitudinal model}
+
+
+# Specification
+
+:::::::::::::: {.columns}
+::: {.column width="70%"}
+
+
+```{r out.width = "75%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/temp/CLPM-RI.png")
+```
+
+:::
+::: {.column width="30%"}
+
+\tiny
+The model is identified as depicted (3 waves). It comprises 5 main elements: (A) the observed variables in green; (B) the between-person variances in orange; (C) the polygenic scores in blue; (D) the means in yellow; and (E) the random intercepts in red. Free paths are in black, and named. Fixed paths are marked with 1. The specific variances for the observed variables are equal across study waves, marked in green.
+
+:::
+::::::::::::::
+
+# Stationarity
+
+```{r out.width = "60%", fig.align = "center", fig.cap="Correlation between Xt and Yt, where t is the study wave up to 40. With the extension of the model, the correlations stabilize. This model reaches stationarity at wave 10."}
+knitr::include_graphics("/home/luis/Desktop/temp/stationarity-1.png")
+```
+
+# Estimates with increasing lag
+
+```{r out.width = "75%", fig.align = "center", fig.cap="Estimates change slightly with RI. Model reproduces Madhur's model behavior"}
+knitr::include_graphics("/home/luis/Desktop/temp/causal-effect-size-1.png")
+```
+
+# Wireframe of the means of the measured variables across waves
+
+:::::::::::::: {.columns}
+::: {.column width="70%"}
+
+```{r out.width = "100%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/temp/spaghetti_final_values.png")
+```
+
+:::
+::: {.column width="30%"}
+
+\tiny
+The means of the observed variables are plotted individually for both Xt and Yt, when t is the study wave, starting in t = 20 . The panel B depict  the means when the model with random intercepts. Panel A depict the model without random intercepts. Panel B shows more spread than panel A. Theta (px =py = 0.1; pt_qt+1=qt_pt+1 =0.05; pt_qt+1 =  qt_pt+1 = 0.1; pt_pt+1 =  qt_qt+1 =  0.4)
+
+:::
+::::::::::::::
+
+# Heatmap for the expected cov
+
+```{r out.width = "50%", fig.align = "center", fig.cap="The expected covariance matrix for the observed variables."}
+knitr::include_graphics("/home/luis/Desktop/temp/heatmap4tp.png")
+```
+
+# Power with increasing lag
+
+```{r out.width = "70%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/temp/power-1.png")
+```
+
+# Power at the first stationary wave
+
+```{r out.width = "65%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Desktop/temp/power-nobs.png")
+```
+
+# Acknowledgements
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+## Team
+
+
+
+\vspace{3mm}
+- Michael C Neale.  
+
+- NIH grant no R01 DA049867 and 5T32MH-020030 
+
+
+:::
+::: {.column width="50%"}
+
+
+## Contact 
+
+```{r qr-twitter, echo = F,  out.width='80%', fig.align='center'}
+image(qrencode_raster("https://twitter.com/lf_araujo"),
+  asp = 1, col = c("white", "black"), axes = FALSE,
+  xlab = "", ylab = ""
+)
+```
+
+
+:::
+::::::::::::::
+
+\appendix
+
+#  {.standout}
+
+
+- Thank you
+

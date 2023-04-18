@@ -1,0 +1,5 @@
+\babel@toc {australian}{}\relax 
+\beamer@sectionintoc {1}{Introduction to mendelian randomization}{3}{0}{1}
+\beamer@sectionintoc {2}{Sensitivity analysis in MR}{45}{0}{2}
+\beamer@sectionintoc {3}{Mixing with the DoC model}{64}{0}{3}
+\beamer@sectionintoc {4}{Bi-directional MR-DoC, MR-DoC2}{79}{0}{4}
