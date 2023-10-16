@@ -1,8 +1,8 @@
-# CIDACS rmarkdown beamer template
+# VIPBG rmarkdown beamer template
 
-This template keeps the folder structure required in [ProjectTemplate](http://projecttemplate.net/) and my personal [template](https://github.com/lf-araujo/cidacs). It basically consists of three files within the /style folder: body_page.png, title.png and template.tex.
+This template keeps the folder structure required in [ProjectTemplate](http://projecttemplate.net/) and my personal [template](https://github.com/lf-araujo/vcu-rmarkdown-beamer-template). It basically consists of three files within the /style folder: body_page.png, title.png and template.tex.
 
-The `/src/2020-reuniao.Rmd` includes a meaningful yaml header.
+The `/src/2020-presentation.Rmd` includes a meaningful yaml header.
 
 ## Acknowledgment
 
