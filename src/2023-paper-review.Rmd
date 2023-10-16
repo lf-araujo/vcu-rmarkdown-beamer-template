@@ -1,0 +1,274 @@
+---
+title: "Assessing aetiological overlap between child and \ adult attention-deficit hyperactivity disorder symptomatology using an extended family design"
+author: "Luis Castro-de-Araujo ^[Post-doc T32. luis.araujo@vcuhealth.org  \n]"
+date: \today 
+institute: "Virginia Institute for Psychiatric and Behavioral Genetics \n & \n The University of Melbourne"
+csl: style/chicago-fullnote-bibliography.csl
+suppress-bibliography: true
+bibliography: /home/luis/Documents/library.bib
+lang: en-AU
+toc: yes 
+output: beamer_presentation
+classoption: "aspectratio=169"
+theme: metropolis
+header-includes: |
+ \usepackage{navigator}
+ \embeddedfile{project}{2022-presentation.Rmd}
+  \usepackage{appendixnumberbeamer}
+  \usepackage{roboto}
+ \usepackage[font={footnotesize}]{caption}
+ \setbeamerfont{footnote}{size=\tiny}
+ \metroset{sectionpage=progressbar, titleformat=smallcaps}
+ \setbeamercolor{itemize item}{fg=vcuyellow}
+ \setbeamercolor{itemize subitem}{fg=vcuyellow}
+ \setbeamercolor{itemize subsubitem}{fg=vcuyellow}
+  \setbeamertemplate{itemize item}[circle]
+  \setbeamertemplate{itemize subitem}[square]
+  \setbeamertemplate{itemize subsubitem}[triangle]
+  \titlegraphic{%
+  \hfill\includegraphics[width=3cm,height=1.6cm,keepaspectratio]{style/VCU-Logo.png}}
+  \definecolor{vcuyellow}{HTML}{FDBD10}
+ \setbeamercolor{palette primary}{fg=vcuyellow, bg=black}
+  \setbeamercolor{frametitle}{fg=vcuyellow, bg=black}
+  \setbeamercolor{titlelike}{fg=black}
+  \setbeamercolor{titlepage}{fg=black, bg=vcuyellow}
+  \setbeamercolor{footnote}{bg=black}
+  \setbeamercolor{normal text}{fg=black}
+  \setbeamercolor{block title}{fg=black, bg=vcuyellow!40!white}
+  \setbeamercolor{alerted text}{fg=red}
+  \setbeamercolor{example text}{fg=black}
+  \setbeamercolor{title separator}{fg = vcuyellow, bg=vcuyellow}
+ \setbeamercolor{progress bar}{bg=white, fg=vcuyellow}
+ \setbeamercolor{progress bar in head/foot}{bg=white, fg=vcuyellow}
+  \setbeamercolor{progress bar in section page}{bg=white, fg=vcuyellow}
+ \makeatletter
+ \newsavebox{\mybox}
+ \setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \savebox{\mybox}{%
+      \begin{beamercolorbox}[%
+          wd=\paperwidth,%
+          sep=0pt,%
+          leftskip=\metropolis@frametitle@padding,%
+          rightskip=\metropolis@frametitle@padding,%
+        ]{frametitle}%
+      \metropolis@frametitlestrut@start\insertframetitle\metropolis@frametitlestrut@end%
+      \end{beamercolorbox}%
+    }
+  \begin{beamercolorbox}[%
+      wd=\paperwidth,%
+      sep=0pt,%
+      leftskip=\metropolis@frametitle@padding,%
+      rightskip=\metropolis@frametitle@padding,%
+    ]{frametitle}%
+  \metropolis@frametitlestrut@start\insertframetitle\metropolis@frametitlestrut@end%
+  \hfill%
+  \raisebox{-\metropolis@frametitle@padding}{\includegraphics[height=\dimexpr\ht\mybox+\metropolis@frametitle@padding\relax]{style/VCU-Logo.png}}%
+    \hspace*{-\metropolis@frametitle@padding}
+  \end{beamercolorbox}%
+ }
+ \makeatother
+  \makeatletter
+  \pretocmd{\beamer@reseteecodes}{%
+    \ifbool{metropolis@standout}{
+      \endgroup
+      \boolfalse{metropolis@standout}
+    }{}
+  }{}{}
+  \makeatother
+---
+
+
+```{r setup, include=FALSE}
+
+c("ProjectTemplate", "here", "TwoSampleMR", "stringr","patchwork",
+  "dplyr", "qrencoder", "knitr", "MASS", "quantreg", "ggplot2") |>
+  lapply(function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x)}})
+
+set.seed(42) # setting seed for stochastic functions
+setwd(here()) # needed as we are in /src, in linux here() should be used
+
+load.project(cache = F) # Loading the project
+pclean()
+
+# R options
+options(
+  digits = 3, # Only two decimal digits
+  scipen = 999 # Remove scientific notation
+)
+
+
+# Knitr options
+knitr::opts_chunk$set(
+  comment = NA, # remove comment symbol
+  cache.path = "../cache/", # where should I save cache?
+  fig.path = "../graphs/", # where should I save figures?
+  echo = F, # dont echo by default
+  cache = F, # dont cache by default
+  fig.width = 10, # setting the best witdth for figures
+  fig.height = 7, # best height
+  dpi = 300, # high dpi for publication quality,
+  error = FALSE # do not interrupt in case of errors
+)
+
+theme_luis  <- function() {
+  return_theme <-  ggplot2::theme_bw(12) +
+    ggplot2::theme( 
+        panel.border = element_rect(colour = "black"),
+        legend.background = element_rect(linetype = 1, size = 0.2, colour = 1),
+        text = element_text(size = 13),
+        axis.text = element_text(size = 12),
+        element_line(size = 1))
+}
+
+```
+
+# Intro
+
+- Several longitudinal studies have cast doubt on the aetiological overlap between child and adult attention-deficit hyperactivity disorder (ADHD). However, a lack of genetically sensitive data following children across adulthood precludes direct evaluation of aetiological overlap between child and adult ADHD
+
+## Aims
+- Circumvent existing gap in longitudinal data by exploring genetic overlap between maternal (adult) and offspring (child) ADHD and comorbid symptoms in an extended family cohort.
+
+# Methods
+
+- Data were drawn from the Norwegian Mother, Father, and Child Cohort Study (MoBa), a Norwegian birth registry cohort of 114,500 children and their parents. Medical Birth Registry of Norway (MBRN) data were used to link extended families. 
+
+- Mothers self-reported their own ADHD symptoms when children were aged 3, and reported children’s ADHD symptoms at age 5, and children’s ADHD, oppositional-defiant disorder (ODD), conduct disorder (CD), anxiety, and depression symptoms at age 8. 
+
+- Genetic correlations were derived using Multiple-Children-of-Twins-and-Siblings (MCoTS) and extended bivariate twin models.
+
+# Methods
+
+- 25,469 mothers
+- controlled for the effects of maternal age, parity (mothers’ number of previous births), and children’s year of birth on all variables, and the effects of child sex on child measures. 
+- This include sibling, half-sibling and cousin parents, and multiple children per parent
+
+# Frequencies of mothers and children stratified by relatedness
+
+```{r relatedness, fig.align = "center", out.width = "70%"}
+knitr::include_graphics("/home/luis/Pictures/Screenshot from 2023-02-26 18-49-14.png")
+```
+
+
+# Measures
+
+## Adult ADHD symptoms (reported by mothers when children were aged 3)
+
+- Adult Self-Report Scale (ASRS)
+
+## Child ADHD symptoms at age 5
+- Conners Parent Rating Scale-Revised (CPRS-R)
+  - well-validated measure of parent-reported child ADHD symptoms
+
+## Child ADHD and comorbid symptoms at age 8
+- Parent/Teacher Rating Scale for Disruptive Behavior (RS-DBD)
+  - for ADHD, ODD and CD
+
+
+# Descriptive statistics
+
+```{r descriptive, fig.align = "center", out.width = "90%"}
+knitr::include_graphics("/home/luis/Pictures/Screenshot from 2023-02-26 18-05-53.png")
+```
+
+# MCoTS Model Specification
+
+:::::::::::::: {.columns}
+::: {.column width="70%"}
+
+
+```{r out.width = "90%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Pictures/Picture1.png")
+```
+
+:::
+::: {.column width="30%"}
+
+\tiny
+Supplementary Figure S3: Model specification for the MCoTS model. A1, C1 and E1 latent factors represent parental additive genetic, shared environmental and non-shared environmental variance components. A2, C2 and E2 factors represent the equivalent variance components for children. A1’ latent factors represent genetic variance components that are shared between the parent and child phenotype. Paths a1’, c1’, and p represent the proportion of the parent-child association explained by genetic transmission, extended family environmental influence, and residual association indicating an influence of exposure to the parental phenotype. ADHD-s = ADHD symptoms.
+
+This include sibling, half-sibling and cousin parents, and multiple children per parent
+:::
+::::::::::::::
+
+
+# Extended Bivariate Twin Model Specification
+
+:::::::::::::: {.columns}
+::: {.column width="70%"}
+
+
+```{r out.width = "90%", fig.align = "center"}
+knitr::include_graphics("/home/luis/Pictures/Picture2.png")
+```
+
+:::
+::: {.column width="30%"}
+
+\tiny
+Model specification for the Extended Bivariate Twin Model. A1, C1 and E1 latent factors represent parental additive genetic, shared environmental and non-shared environmental variance components for child ADHD symptoms at age 5. A2, C2 and E2 factors represent the equivalent variance components for child comorbid symptoms at age 8. Paths rA, rC, and rE represent genetic, shared environmental, and nonshared environmental associations underpinning the total phenotypic association between the two measures. ADHD-s = ADHD symptoms.
+
+:::
+::::::::::::::
+
+
+# Phenotypic correlations
+
+```{r phenotypic-correlations, fig.align = "center", out.width = "70%"}
+knitr::include_graphics("/home/luis/Pictures/Screenshot from 2023-02-26 18-04-12.png")
+```
+
+# Genetic correlations
+
+```{r genetic-correlations, fig.align = "center", out.width = "70%"}
+knitr::include_graphics("/home/luis/Pictures/Screenshot from 2023-02-26 18-05-53.png")
+```
+
+# Conclusion
+
+- genetically driven co-occurrence of adult ADHD symptoms in mothers and a typical pattern of ADHD-related symptomatology in their children
+
+
+# Acknowledgements
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+## Team
+
+
+
+\vspace{3mm}
+- Michael C Neale.  
+
+- NIH grant no R01 DA049867 and 5T32MH-020030 
+
+
+:::
+::: {.column width="50%"}
+
+
+## Contact 
+
+```{r qr-twitter, echo = F,  out.width='80%', fig.align='center'}
+image(qrencode_raster("https://twitter.com/lf_araujo"),
+  asp = 1, col = c("white", "black"), axes = FALSE,
+  xlab = "", ylab = ""
+)
+```
+
+
+:::
+::::::::::::::
+
+\appendix
+
+#  {.standout}
+
+
+- Thank you
+
